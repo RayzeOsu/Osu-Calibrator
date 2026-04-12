@@ -10,7 +10,7 @@ Most of us blindly copy the Rapid Trigger and Actuation settings of top players.
 
 This app mathematically analyzes your exact finger movements, calculates your Unstable Rate (UR), and acts as a digital coach to tell you **exactly how many millimeters to adjust your settings** to fix your misfires.
 
-## 📥 How to Download (For Regular Users)
+## How to Download (For Regular Users)
 
 You do **not** need to download this source code unless you are a developer. 
 
