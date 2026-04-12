@@ -2,7 +2,7 @@
   <img src="bannerosu.png" alt="OSU Calibrator Banner">
 </p>
 
-# 🎹 OSU! CALIBRATOR by Rayze
+# OSU! CALIBRATOR by Rayze
 
 Welcome to the official repository for the **OSU! Calibrator**, a smart desktop tool designed specifically for osu! players using Hall Effect keyboards (Wooting, SayoDevice, DrunkDeer, etc.). 
 
@@ -21,7 +21,7 @@ You do **not** need to download this source code unless you are a developer.
 
 ---
 
-## 🚀 Quick Start Guide
+## Quick Start Guide
 
 **Step 1: Plug in your Current Setup**
 1. Look at your keyboard's software and type your current **Base Actuation**, **Rapid Trigger Press**, and **Rapid Trigger Release** into the app. *(If your keyboard only has one Rapid Trigger slider, uncheck the "Separate Sensitivity" box).*
@@ -39,7 +39,7 @@ Once finished, the app will process the data and generate a custom report. Look 
 
 ---
 
-## 🧠 Understanding Your Results
+## Understanding Your Results
 
 The app doesn't just spit out numbers; it explains what happened. Here is what to look out for:
 
@@ -50,7 +50,7 @@ The app doesn't just spit out numbers; it explains what happened. Here is what t
 
 ---
 
-## ❓ FAQ
+## FAQ
 
 **Q: Why does the app say my tapping is "Volatile" and keep changing its advice?**
 **A:** The app's math is highly sensitive. If you do three tests in a row, but your hands are cold or you keep changing your physical tapping style, the app has to change its recommendations to try and catch your new finger movements. Warm up for 5 minutes before calibrating so your hands are consistent!
@@ -72,5 +72,5 @@ The app doesn't just spit out numbers; it explains what happened. Here is what t
 
 ---
 
-## ⚖️ License
+## License
 This project is open source and licensed under the GNU General Public License v3.0 (GPLv3).
