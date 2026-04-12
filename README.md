@@ -1,4 +1,6 @@
-![OSU Calibrator Banner](banner.png)
+<p align="center">
+  <img src="banner.jpg" alt="OSU Calibrator Banner">
+</p>
 
 # 🎹 OSU! CALIBRATOR by Rayze
 
