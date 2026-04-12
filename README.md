@@ -1,3 +1,5 @@
+![OSU Calibrator Banner](banner.png)
+
 # 🎹 OSU! CALIBRATOR by Rayze
 
 Welcome to the official repository for the **OSU! Calibrator**, a smart desktop tool designed specifically for osu! players using Hall Effect keyboards (Wooting, SayoDevice, DrunkDeer, etc.). 
