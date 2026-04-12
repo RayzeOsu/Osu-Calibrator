@@ -39,7 +39,7 @@ Once finished, the app will process the data and generate a custom report. Look 
 
 ---
 
-## 🚀 Quick Start Guide
+## Quick Start Guide
 
 **Step 1: Plug in your Current Setup**
 1. Look at your keyboard's software and type your current **Base Actuation**, **Rapid Trigger Press**, and **Rapid Trigger Release** into the app. *(If your keyboard only has one Rapid Trigger slider, uncheck the "Separate Sensitivity" box).*
