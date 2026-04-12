@@ -58,22 +58,15 @@ from PySide6.QtWidgets import (
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
 import pyqtgraph as pg
 
-
-
 HISTORY_SCHEMA_VERSION = 1
 APP_NAME = "RayzeCalibration"
 
-
-
 def get_resource_path(relative_path: str) -> str:
-    """Get absolute path to resource, works for dev and for PyInstaller."""
     if hasattr(sys, "_MEIPASS"):
         return os.path.join(sys._MEIPASS, relative_path)
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), relative_path)
 
-
 def _is_writable_dir(path: str) -> bool:
-    """Return True if a directory exists and we can write to it."""
     if not os.path.isdir(path):
         return False
     try:
@@ -85,23 +78,8 @@ def _is_writable_dir(path: str) -> bool:
     except OSError:
         return False
 
-
 def get_persistent_dir() -> str:
-    """
-    Get a persistent writable data folder.
-
-    FIX #25: Robust fallback chain for write permissions.
-    Order of preference:
-      1. LOCALAPPDATA\\RayzeCalibration (Windows standard)
-      2. ~/.local/share/RayzeCalibration (Linux/Mac XDG-ish)
-      3. Temp directory (last resort — at least it always works)
-
-    The old code fell back to os.path.dirname(sys.executable) which fails
-    silently when the exe is installed to Program Files because Windows
-    blocks writes there.
-    """
     candidates = []
-
     local_app_data = os.environ.get("LOCALAPPDATA")
     if local_app_data:
         candidates.append(os.path.join(local_app_data, APP_NAME))
@@ -123,17 +101,10 @@ def get_persistent_dir() -> str:
 
     return os.path.join(tempfile.gettempdir(), APP_NAME)
 
-
 def get_persistent_songs_dir() -> str:
-    """Return the permanent songs directory used by the app."""
     return os.path.join(get_persistent_dir(), "songs")
 
-
 def ensure_persistent_songs() -> None:
-    """
-    Copy bundled songs from PyInstaller temp folder to permanent folder.
-    In development mode, this also ensures the local songs folder exists.
-    """
     persistent_songs_dir = get_persistent_songs_dir()
     os.makedirs(persistent_songs_dir, exist_ok=True)
 
@@ -162,15 +133,11 @@ def ensure_persistent_songs() -> None:
                         except OSError as e:
                             print(f"Failed to sync dev song '{file_name}': {e}")
 
-
-
 HISTORY_FILE = os.path.join(get_persistent_dir(), "calibration_history.json")
 HISTORY_BACKUP = os.path.join(get_persistent_dir(), "calibration_history.backup.json")
 MAX_HISTORY_ENTRIES = 5
-
 MIN_PRESSES_FOR_ANALYSIS = 8
 WARMUP_TAPS_TO_DISCARD = 2
-
 INTERVAL_TO_TIMING_STDEV = math.sqrt(2)
 
 RECOMMENDATION_THRESHOLDS = {
@@ -178,35 +145,28 @@ RECOMMENDATION_THRESHOLDS = {
     "min_quality_for_keep": 78,
     "min_quality_elite": 82,
     "min_quality_high_confidence": 70,
-
     "ur_elite_max": 70,
     "ur_excellent_max": 95,
     "ur_good_max": 120,
     "ur_decent_max": 165,
     "ur_high_min": 165,
     "ur_very_high_min": 200,
-
     "keep_ur_min": 70,
     "keep_ur_max": 115,
     "keep_consistency_min": 88,
     "keep_drift_max": 4.0,
     "keep_gallop_max": 10,
-
     "severe_overtrigger_score": 35,
     "moderate_overtrigger_score": 12,
     "fast_repeat_severe": 2,
     "release_noise_severe": 2,
-
     "drift_significant_ms": 6.0,
-
     "gallop_significant_ms": 15,
     "gallop_concerning_ms": 12,
-
     "min_base_actuation": 0.10,
     "max_base_actuation": 4.00,
     "max_phase_gap_seconds": 2.0,
 }
-
 
 TECHNIQUE_TIPS = {
     "gallop_bias": [
@@ -258,7 +218,6 @@ TECHNIQUE_TIPS = {
     ],
 }
 
-
 QUALITY_PENALTIES = {
     "press_count_low": 18,
     "press_count_med": 12,
@@ -278,15 +237,12 @@ QUALITY_PENALTIES = {
     "gallop_mild": 4,
 }
 
-
-
 @dataclass
 class PhaseConfig:
     name: str
     description: str
     duration: int
     weight: float
-
 
 @dataclass
 class PhaseResult:
@@ -318,13 +274,10 @@ class PhaseResult:
     target_bpm: Optional[int] = None
     bpm_accuracy: Optional[float] = None
 
-
 @dataclass
 class CalibrationSession:
     settings: Dict[str, float]
     summary: Dict
-
-
 
 class HistoryStore:
     def __init__(self, path: str = HISTORY_FILE, backup_path: str = HISTORY_BACKUP):
@@ -409,8 +362,6 @@ class HistoryStore:
 
     def previous(self) -> Optional[CalibrationSession]:
         return self.sessions[-2] if len(self.sessions) >= 2 else None
-
-
 
 class AnalysisEngine:
     @staticmethod
@@ -681,8 +632,6 @@ class AnalysisEngine:
 
         return qual, label
 
-
-
 class RecommendationEngine:
     @staticmethod
     def pick_technique_tip(
@@ -698,15 +647,6 @@ class RecommendationEngine:
         key1_count: int,
         key2_count: int,
     ) -> str:
-        """
-        Choose a single actionable technique tip based on the dominant issue.
-        Priority is ordered by what matters most to fix first — hardware bounce
-        beats gallop beats rhythm beats drift beats generic.
-
-        Uses a deterministic rotation inside each category (based on the first
-        metric value) so the same user doesn't see the exact same tip every run
-        without it being random-per-call.
-        """
         import random as _rnd
         rng = _rnd.Random(int((w_ur + gallop * 10) * 100))
 
@@ -1128,8 +1068,6 @@ class RecommendationEngine:
             "technique_tip": technique_tip,
         }
 
-
-
 class KeyListenerManager(QObject):
     key_state_changed = Signal(bool)
     keys_detected = Signal(str, str, str, str)
@@ -1191,7 +1129,6 @@ class KeyListenerManager(QObject):
         self.bind_timer.start(5000)
 
     def cancel_key_detect(self):
-        """FIX #11: Explicit cancel entry point the UI can call as a fallback."""
         if self.key_detect_mode:
             self.key_detect_mode = False
             self.bind_timer.stop()
@@ -1264,8 +1201,6 @@ class KeyListenerManager(QObject):
         if k and k in self.tracked_keys:
             self.phase_release.emit(k, time.perf_counter())
 
-
-
 class TiltedKeycapLogo(QWidget):
     def __init__(self):
         super().__init__()
@@ -1306,7 +1241,6 @@ class TiltedKeycapLogo(QWidget):
         painter.setBrush(QBrush(top_color))
         painter.drawPolygon(top_poly)
 
-
 class MetronomeWidget(QWidget):
     def __init__(self):
         super().__init__()
@@ -1318,8 +1252,6 @@ class MetronomeWidget(QWidget):
         self.start_time = 0.0
 
     def set_faded(self, faded: bool):
-        """Dim the metronome visually — used during Push phase to signal
-        that the user should ignore the beat and go max speed."""
         if self.faded != faded:
             self.faded = faded
             self.update()
@@ -1365,8 +1297,6 @@ class MetronomeWidget(QWidget):
         painter.setPen(Qt.NoPen)
         painter.drawEllipse(QPointF(25, 25), size / 2.0, size / 2.0)
 
-
-
 def apply_shadow(widget: QWidget, blur_radius=20, y_offset=5, alpha=60):
     shadow = QGraphicsDropShadowEffect()
     shadow.setBlurRadius(blur_radius)
@@ -1374,7 +1304,6 @@ def apply_shadow(widget: QWidget, blur_radius=20, y_offset=5, alpha=60):
     shadow.setYOffset(y_offset)
     shadow.setColor(QColor(0, 0, 0, alpha))
     widget.setGraphicsEffect(shadow)
-
 
 class HelpIconLabel(QLabel):
     def __init__(self, text: str, tooltip: str = "") -> None:
@@ -1394,7 +1323,6 @@ class HelpIconLabel(QLabel):
     def leaveEvent(self, event) -> None:
         QToolTip.hideText()
         super().leaveEvent(event)
-
 
 class MetricCard(QFrame):
     def __init__(self, title: str, tooltip: str = "") -> None:
@@ -1440,7 +1368,6 @@ class MetricCard(QFrame):
         self.style().polish(self)
         self.update()
 
-
 class CollapsibleSection(QWidget):
     def __init__(self, title: str) -> None:
         super().__init__()
@@ -1467,12 +1394,9 @@ class CollapsibleSection(QWidget):
         self.toggle_button.setArrowType(Qt.DownArrow if expanded else Qt.RightArrow)
         self.content.setVisible(expanded)
 
-
-
-STATE_IDLE = "idle"          # Ready to begin phase 1
-STATE_PHASE_READY = "ready"  # A phase has completed, ready to begin next phase
-STATE_COMPLETE = "complete"  # All phases done, button now acts as "reset"
-
+STATE_IDLE = "idle"          
+STATE_PHASE_READY = "ready"  
+STATE_COMPLETE = "complete"  
 
 class TapAnalyzerApp(QMainWindow):
     def __init__(self) -> None:
@@ -1548,9 +1472,7 @@ class TapAnalyzerApp(QMainWindow):
         self.listener_mgr.start_background()
         self.installEventFilter(self)
 
-
     def _on_player_error(self, error, error_string):
-        """Surface audio errors so users can actually debug them."""
         if error == QMediaPlayer.NoError:
             return
         friendly = {
@@ -1569,7 +1491,6 @@ class TapAnalyzerApp(QMainWindow):
             "Audio Playback Error",
             f"{friendly}\n\nPhases will continue to work normally without audio.",
         )
-
 
     def eventFilter(self, obj, event):
         if event.type() == QEvent.WindowActivate:
@@ -1590,7 +1511,6 @@ class TapAnalyzerApp(QMainWindow):
         elif self.start_button.isEnabled():
             self.start_button.click()
 
-
     def _on_start_button_clicked(self):
         if self.button_state == STATE_COMPLETE:
             self.reset_calibration()
@@ -1598,7 +1518,6 @@ class TapAnalyzerApp(QMainWindow):
             self.start_phase()
 
     def _set_button_state(self, state: str):
-        """Single source of truth for start button label + state."""
         self.button_state = state
         if state == STATE_IDLE:
             self.start_button.setText("Start Phase  (Space)")
@@ -1609,7 +1528,6 @@ class TapAnalyzerApp(QMainWindow):
         elif state == STATE_COMPLETE:
             self.start_button.setText("Reset for New Calibration  (Space)")
             self.start_button.setEnabled(True)
-
 
     def get_float(self, line_edit: QLineEdit, default: float) -> float:
         text = line_edit.text().strip()
@@ -1646,7 +1564,6 @@ class TapAnalyzerApp(QMainWindow):
             self.press_main_label.setText("Press Activate (mm)")
         else:
             self.press_main_label.setText("Rapid Trigger (mm)")
-
 
     def extract_bpm_from_filename(self, file_name: str) -> Optional[int]:
         match = re.search(r"\[(\d+)\s*BPM\]", file_name, re.IGNORECASE)
@@ -1761,7 +1678,6 @@ class TapAnalyzerApp(QMainWindow):
 
         self.refresh_song_dropdown(preferred_file=file_name)
 
-
     def build_ui(self) -> None:
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -1793,7 +1709,7 @@ class TapAnalyzerApp(QMainWindow):
         self.rayze_label = QLabel("BY RAYZE")
         self.rayze_label.setObjectName("AppSubtitle")
         self.rayze_explainer = QLabel(
-            "Iterative Hall Effect calibration tool. Press SPACE to start/stop a phase."
+            "Iterative Hall Effect calibration tool"
         )
         self.rayze_explainer.setObjectName("ExplainerSubtitle")
         self.rayze_explainer.setWordWrap(True)
@@ -2178,6 +2094,7 @@ class TapAnalyzerApp(QMainWindow):
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
                 font-size: 14px;
             }
+            #MainContainer {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #1a1625, stop:0.4 #111214, stop:1 #09090b);
             }
             QMainWindow { background-color: #09090b; }
@@ -2189,37 +2106,50 @@ class TapAnalyzerApp(QMainWindow):
                 border-radius: 4px;
             }
             QScrollArea { border: none; background: transparent; }
+            #HeaderPanel {
                 background-color: #0c0c0e;
                 border: 1px solid #111214;
                 border-radius: 12px;
             }
+            #AppTitle {
                 font-size: 32px;
                 font-weight: 900;
                 color: #ffffff;
                 letter-spacing: -1px;
             }
+            #AppSubtitle {
                 color: #5865F2;
                 font-size: 14px;
                 font-weight: 800;
                 letter-spacing: 1.5px;
             }
+            #ExplainerSubtitle { color: #80848e; font-size: 13px; }
+            #SectionTitle {
                 font-size: 15px;
                 font-weight: 800;
                 color: #ffffff;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
             }
+            #BigStatus { font-size: 24px; font-weight: 800; color: #ffffff; }
+            #MutedText { color: #a1a1aa; line-height: 1.5; }
+            #RichText { color: #dbdee1; font-size: 14px; line-height: 1.4; }
+            #HelpIcon { color: #80848e; font-weight: bold; font-size: 14px; }
+            #HelpIcon:hover { color: #ffffff; }
+            #MiniLabel {
                 color: #a1a1aa;
                 font-size: 12px;
                 font-weight: 700;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
             }
+            #InstructionBanner {
                 background-color: #1e1f22;
                 border: 1px solid #111214;
                 border-radius: 12px;
                 border-left: 4px solid #5865F2;
             }
+            #StatusBadge {
                 background-color: #1e1f22;
                 border: 1px solid #111214;
                 color: #dbdee1;
@@ -2228,23 +2158,34 @@ class TapAnalyzerApp(QMainWindow):
                 font-weight: 700;
                 font-size: 13px;
             }
+            #Panel, #MetricCard, QPlainTextEdit {
                 background-color: #1e1f22;
                 border: 1px solid #111214;
                 border-radius: 12px;
             }
+            #PanelSub {
                 background-color: #0c0c0e;
                 border: 1px solid #111214;
                 border-radius: 8px;
             }
+            #MetricCard:hover, QPlainTextEdit:hover, QLineEdit:hover {
                 border-color: #313338;
                 background-color: #2b2d31;
             }
+            #MetricCard[status="good"]  { border-left: 4px solid #57F287; }
+            #MetricCard[status="warn"]  { border-left: 4px solid #FEE75C; }
+            #MetricCard[status="bad"]   { border-left: 4px solid #ED4245; }
+            #MetricCard[status="info"]  { border-left: 4px solid #5865F2; }
+            #MetricCard[status="coach"] { border-left: 4px solid #EB459E; }
+            #MetricTitle {
                 color: #949ba4;
                 font-size: 11px;
                 font-weight: 800;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
             }
+            #MetricValue { color: #ffffff; font-size: 18px; font-weight: 700; }
+            #MetricSub { color: #a1a1aa; font-size: 13px; }
             QLineEdit, QComboBox {
                 background-color: #0c0c0e;
                 border: 1px solid #111214;
@@ -2275,14 +2216,20 @@ class TapAnalyzerApp(QMainWindow):
             QPushButton:hover { background-color: #4e5058; border-color: #313338; color: #ffffff; }
             QPushButton:pressed { background-color: #2b2d31; }
             QPushButton:disabled { color: #80848e; background-color: #1e1f22; border-color: #111214; }
+            #PrimaryButton {
                 background-color: #5865F2;
                 border: 1px solid #5865F2;
                 color: white;
             }
+            #PrimaryButton:hover { background-color: #4752C4; border-color: #4752C4; }
+            #PrimaryButton:pressed { background-color: #3C45A5; }
+            #PrimaryButton:disabled { background-color: #1e3a8a; color: #60a5fa; border-color: #1e3a8a; }
+            #SecondaryAction {
                 background-color: #248046;
                 border: 1px solid #248046;
                 color: #ffffff;
             }
+            #SecondaryAction:hover { background-color: #1a6334; }
             QCheckBox { spacing: 10px; }
             QCheckBox::indicator {
                 width: 20px; height: 20px;
@@ -2313,7 +2260,6 @@ class TapAnalyzerApp(QMainWindow):
             }
         """)
 
-
     def setup_graph_interaction_items(self):
         self.vLine = pg.InfiniteLine(angle=90, movable=False, pen=pg.mkPen("#e4e4e7", width=1, style=Qt.DashLine))
         self.hLine = pg.InfiniteLine(angle=0, movable=False, pen=pg.mkPen("#e4e4e7", width=1, style=Qt.DashLine))
@@ -2335,7 +2281,6 @@ class TapAnalyzerApp(QMainWindow):
         if hasattr(self, "tooltip_text"):
             self.tooltip_text.hide()
 
-
     def update_logo_state(self, is_pressed: bool):
         self.logo.set_pressed(is_pressed)
 
@@ -2350,7 +2295,6 @@ class TapAnalyzerApp(QMainWindow):
         self.detect_cancel_btn.setVisible(True)
 
     def cancel_key_detect_from_ui(self):
-        """FIX #11: Explicit UI cancel that works even when pynput misses Esc."""
         self.listener_mgr.cancel_key_detect()
 
     def apply_detected_keys(self, display_k1: str, raw_k1: str, display_k2: str, raw_k2: str):
@@ -2388,7 +2332,6 @@ class TapAnalyzerApp(QMainWindow):
         self.listener_mgr.bind_timer.stop()
         self.restore_key_detect_ui()
 
-
     def on_phase_press(self, key: str, t: float):
         if not self.test_running:
             return
@@ -2404,7 +2347,6 @@ class TapAnalyzerApp(QMainWindow):
         with self.lock:
             self.held_keys.discard(key)
             self.events.append({"time": t, "type": "release", "key": key})
-
 
     def export_to_clipboard(self):
         clipboard = QApplication.clipboard()
@@ -2438,7 +2380,6 @@ class TapAnalyzerApp(QMainWindow):
         self.summary_phase_note_card.set_data("-", "Complete all phases for analysis.", "neutral")
         self.summary_tip_card.set_data("-", "Tips will appear after your calibration.", "neutral")
 
-
     def update_phase_ui(self) -> None:
         cfg = self.phase_configs[self.current_phase_index]
         self.phase_label.setText(cfg.name)
@@ -2446,12 +2387,6 @@ class TapAnalyzerApp(QMainWindow):
         self.phase_progress_label.setText(f"Phase {self.current_phase_index + 1} of {len(self.phase_configs)}")
 
     def cancel_phase(self) -> None:
-        """
-        FIX #5: Cancelling a phase now fully resets the run state.
-        Previously, cancelling mid-run left stale phase_results and
-        current_phase_index, meaning the next Start click would continue
-        from a broken middle state with some phases still in the list.
-        """
         if not self.test_running:
             return
         self.test_running = False
@@ -2789,7 +2724,6 @@ class TapAnalyzerApp(QMainWindow):
         if rem <= 0:
             self.stop_phase()
 
-
     def render_final_results(self):
         if not self.phase_results:
             self.analysis_box.setPlainText("No usable phase data was captured.")
@@ -3004,7 +2938,6 @@ class TapAnalyzerApp(QMainWindow):
                 "neutral"
             )
 
-
     def render_graph(self, results: List[PhaseResult]):
         self.graph.clear()
         self.graph_data_points = []
@@ -3114,7 +3047,6 @@ class TapAnalyzerApp(QMainWindow):
         self.tooltip_text.setPos(closest_point["x"], closest_point["y"])
         self.tooltip_text.show()
 
-
     def render_detailed_text(self, results: List[PhaseResult], summary: Dict):
         bound_k1_display = self.key1_display_input.text().strip().upper() or "K1"
         bound_k2_display = self.key2_display_input.text().strip().upper() or "K2"
@@ -3171,7 +3103,6 @@ class TapAnalyzerApp(QMainWindow):
 
         self.analysis_box.setPlainText("\n".join(lines))
 
-
     def closeEvent(self, event):
         try:
             self.countdown_timer.stop()
@@ -3183,8 +3114,6 @@ class TapAnalyzerApp(QMainWindow):
             pass
         super().closeEvent(event)
 
-
-
 def main() -> None:
     ensure_persistent_songs()
     app = QApplication(sys.argv)
@@ -3192,7 +3121,6 @@ def main() -> None:
     window = TapAnalyzerApp()
     window.show()
     sys.exit(app.exec())
-
 
 if __name__ == "__main__":
     main()
