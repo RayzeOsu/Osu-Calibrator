@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="banner.jpg" alt="OSU Calibrator Banner">
+  <img src="banner.png" alt="OSU Calibrator Banner">
 </p>
 
 # 🎹 OSU! CALIBRATOR by Rayze
