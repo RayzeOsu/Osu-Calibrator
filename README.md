@@ -15,7 +15,7 @@ This app mathematically analyzes your exact finger movements, calculates your Un
 You do **not** need to download this source code unless you are a developer. 
 
 1. Go to the **[Releases](../../releases)** tab on the right side of this page.
-2. Download the latest `OSU_Calibrator_by_Rayze.exe` file.
+2. Download the latest `Osu! Calibrator.exe` file.
 3. Run the `.exe`! 
 *(Note: Windows SmartScreen might pop up since this is an indie app. Just click "More Info" -> "Run anyway").*
 
