@@ -18,7 +18,6 @@ from PySide6.QtWidgets import (
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
 import pyqtgraph as pg
 
-# --- Import our newly created modules ---
 from config import (
     ensure_persistent_songs, get_persistent_songs_dir,
     RECOMMENDATION_THRESHOLDS, INTERVAL_TO_TIMING_STDEV
