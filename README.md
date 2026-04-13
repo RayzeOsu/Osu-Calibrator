@@ -2,9 +2,9 @@
   <img src="bannerosu.png" alt="OSU Calibrator Banner">
 </p>
 
-# OSU! CALIBRATOR by Rayze
+# Osu! Calibrator by Rayze
 
-Welcome to the official repository for the **OSU! Calibrator**, a smart desktop tool designed specifically for osu! players using Hall Effect keyboards (Wooting, SayoDevice, DrunkDeer, etc.). 
+Welcome to the official repository for the **Osu! Calibrator**, a smart desktop tool designed specifically for osu! players using Hall Effect keyboards (Wooting, SayoDevice, DrunkDeer, etc.). 
 
 Most of us blindly copy the Rapid Trigger and Actuation settings of top players. But if your settings clash with how *your* fingers naturally move, your keyboard gets confused. You end up dropping slider ends, double-tapping, or finger-locking—and it’s usually a hardware config issue, not a skill issue. 
 
