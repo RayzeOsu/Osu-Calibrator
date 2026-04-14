@@ -92,7 +92,7 @@ class KeyListenerManager(QObject):
         if self.key_detect_mode:
             if k == "<esc>":
                 self.key_detect_mode = False
-                self.bind_timer.stop()
+                QTimer.singleShot(0, self.bind_timer.stop)
                 self.bind_cancelled.emit()
                 return
 
@@ -110,7 +110,7 @@ class KeyListenerManager(QObject):
 
             if len(self.detected_keys_raw_temp) >= 2:
                 self.key_detect_mode = False
-                self.bind_timer.stop()
+                QTimer.singleShot(0, self.bind_timer.stop)
                 self.keys_detected.emit(
                     self.detected_keys_display_temp[0], self.detected_keys_raw_temp[0],
                     self.detected_keys_display_temp[1], self.detected_keys_raw_temp[1]

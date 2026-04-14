@@ -184,7 +184,9 @@ class AudioManager:
             self.song_is_paused = True
 
     def stop(self):
-        self.player.stop()
+        if self.player.playbackState() != QMediaPlayer.StoppedState:
+            self.player.stop()
+            
         self.song_is_paused = False
         self.current_song_file = None
         self.current_target_bpm = None
